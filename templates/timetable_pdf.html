@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Timetable for {{ group_name }}</title>
+    <style>
+        body { font-family: sans-serif; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        h1 { text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Timetable for {{ group_name }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Day/Time</th>
+                {% for slot in time_slots %}<th>{{ slot.replace('-', ' - ') }}</th>{% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for day in days %}
+            <tr>
+                <td><strong>{{ day }}</strong></td>
+                {% for slot in time_slots %}
+                    {% set entry = timetable_data[day].get(slot) %}
+                    {% if entry and not entry.is_spanned %}
+                        <td colspan="{{ entry.subject.duration }}">
+                            <strong>{{ entry.subject.code }}</strong><br>
+                            <small>{{ entry.teacher.email.split('@')[0] }} in {{ entry.room.name }}</small>
+                        </td>
+                    {% elif not entry %}
+                        <td></td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

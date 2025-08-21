@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Defaulters (Below 75%)</h2>
+
+{% if defaulters %}
+<table border="1">
+    <tr>
+        <th>Roll</th>
+        <th>Email</th>
+        <th>Percent</th>
+        <th>Present</th>
+        <th>Total</th>
+    </tr>
+    {% for d in defaulters %}
+    <tr>
+        <td>{{ d.roll }}</td>
+        <td>{{ d.email }}</td>
+        <td>{{ d.percent }}%</td>
+        <td>{{ d.present }}</td>
+        <td>{{ d.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- ✅ Export button -->
+<form method="GET" action="{{ url_for('export_defaulters') }}">
+    <button type="submit">Export Defaulters</button>
+</form>
+
+{% else %}
+<p>No defaulters found 🎉</p>
+{% endif %}
+
+<hr>
+
+<!-- ✅ Back to Dashboard -->
+<a href="{{ url_for('admin_dashboard') }}">
+    <button type="button">⬅ Back to Dashboard</button>
+</a>
+
+{% endblock %}
+
+
+
+
+

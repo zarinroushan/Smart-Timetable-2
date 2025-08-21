@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Manage User Roles</h2>
+<p>Here you can update the roles for registered students and teachers.</p>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Email</th>
+                <th>Current Role</th>
+                <th>Change Role To</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    <form action="{{ url_for('update_role', user_id=user.id) }}" method="POST" class="d-flex">
+                        <select name="role" class="form-select me-2">
+                            <option value="student" {% if user.role == 'student' %}selected{% endif %}>Student</option>
+                            <option value="teacher" {% if user.role == 'teacher' %}selected{% endif %}>Teacher</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center">No students or teachers found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+{% endblock %}

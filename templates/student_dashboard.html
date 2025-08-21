@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content-box">
+    <h2><i class="fas fa-user-graduate"></i> Student Dashboard</h2>
+    <div class="card text-center mb-4">
+        <div class="card-header">Attendance Summary</div>
+        <div class="card-body">
+            <h5 class="card-title">Your attendance is {{ percentage }}%</h5>
+            <div class="progress" style="height: 25px;">
+                <div class="progress-bar" role="progressbar" style="width: {{ percentage }}%;" aria-valuenow="{{ percentage }}">{{ percentage }}%</div>
+            </div>
+             <a href="{{ url_for('export_excel') }}" class="btn btn-secondary btn-sm mt-3"><i class="fas fa-file-excel"></i> Export My Report</a>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <h5><i class="fas fa-qrcode"></i> Scan for Attendance</h5>
+            <div id="qr-reader" class="border rounded p-2 mx-auto" style="max-width: 360px"></div>
+            <form id="att-form" method="post" action="{{ url_for('mark_attendance') }}" class="d-none">
+                <input type="hidden" name="qr_token" id="qr-token">
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h5><i class="fas fa-calendar-day"></i> Today's / Upcoming Classes</h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                  <thead><tr><th>Day</th><th>Slot</th><th>Subject</th><th>Room</th></tr></thead>
+                  <tbody>
+                    {% for e in schedule %}
+                      <tr><td>{{e.day}}</td><td>{{e.time_slot}}</td><td>{{e.subject.code}}</td><td>{{e.room.name}}</td></tr>
+                    {% else %}
+                      <tr><td colspan="4" class="text-center">No schedule available</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
+<script>
+  function onScanSuccess(decodedText) {
+    document.getElementById('qr-token').value = decodedText;
+    document.getElementById('att-form').submit();
+    html5QrcodeScanner.clear();
+  }
+  let html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} });
+  html5QrcodeScanner.render(onScanSuccess);
+</script>
+{% endblock %}

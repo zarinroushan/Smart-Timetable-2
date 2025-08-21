@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content-box auth-form">
+  <h2 class="text-center"><i class="fas fa-user-plus text-primary"></i> Create an Account</h2>
+  <form method="post">
+    <div class="mb-3"><label class="form-label">Email</label><input name="email" class="form-control" required></div>
+    <div class="mb-3"><label class="form-label">Password</label><input type="password" name="password" class="form-control" required></div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Role</label>
+        <select name="role" id="role" class="form-select">
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+        </select>
+      </div>
+      <div class="col-md-6 student-only">
+        <label class="form-label">Roll Number</label>
+        <input name="roll_number" class="form-control">
+      </div>
+    </div>
+    <button class="btn btn-primary w-100 mt-4">Register</button>
+  </form>
+</div>
+<script>
+  const roleSel = document.getElementById('role');
+  const studentOnlyFields = document.querySelectorAll('.student-only');
+  const showHide = () => studentOnlyFields.forEach(field => field.style.display = roleSel.value === 'student' ? 'block' : 'none');
+  roleSel.addEventListener('change', showHide);
+  showHide();
+</script>
+{% endblock %}

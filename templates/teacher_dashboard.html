@@ -1,0 +1,38 @@
+
+
+{% extends "base.html" %}
+{% block content %}
+<h2>Teacher Dashboard</h2>
+
+<h3>Your Classes</h3>
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Subject</th>
+        <th>Group</th>
+        <th>Day</th>
+        <th>Time</th>
+        <th>Room</th>
+        <th>QR</th>
+    </tr>
+    {% for tt in schedule %}
+    <tr>
+        <td>{{ tt.subject.name }}</td>
+        <td>{{ tt.group.name }}</td>
+        <td>{{ tt.day }}</td>
+        <td>{{ tt.start_time }} - {{ tt.end_time }}</td>
+        <td>{{ tt.classroom.name }}</td>
+        <td>
+            <!-- View QR -->
+            <a href="{{ url_for('teacher_qr', tt_id=tt.id) }}" target="_blank">
+                <button type="button">View QR</button>
+            </a>
+            <!-- Download QR -->
+            <a href="{{ url_for('teacher_qr_download', tt_id=tt.id) }}">
+                <button type="button">Download QR</button>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+

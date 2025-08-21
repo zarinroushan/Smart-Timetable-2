@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content-box">
+    <h2><i class="fas fa-calendar-alt"></i> View Full Timetable</h2>
+    <p class="text-muted">Select a student group to see their complete weekly schedule.</p>
+    <form method="POST" action="{{ url_for('view_timetable') }}" class="mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col-md-5">
+                <select name="group_id" class="form-select" required><option value="">-- Select Class and Section --</option>{% for group in all_groups %}<option value="{{ group.id }}" {% if selected_group_id == group.id %}selected{% endif %}>{{ group.name }}</option>{% endfor %}</select>
+            </div>
+            <div class="col-md-3"><button type="submit" class="btn btn-primary w-100"><i class="fas fa-search"></i> View Timetable</button></div>
+            {% if selected_group_id %}
+            <div class="col-md-3"><a href="{{ url_for('download_pdf', group_id=selected_group_id) }}" class="btn btn-danger w-100"><i class="fas fa-file-pdf"></i> Download as PDF</a></div>
+            {% endif %}
+        </div>
+    </form>
+    {% if timetable_data %}
+        <h4 class="mt-4">Schedule for {{ selected_group_name }}</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead><tr><th>Day/Time</th>{% for slot in time_slots %}<th>{{ slot.replace('-', ' - ') }}</th>{% endfor %}</tr></thead>
+                <tbody>
+                    {% for day in days %}
+                    <tr>
+                        <td><strong>{{ day }}</strong></td>
+                        {% for slot in time_slots %}
+                            {% set entry = timetable_data[day].get(slot) %}
+                            {% if entry and not entry.is_spanned %}
+                                <td colspan="{{ entry.subject.duration }}">
+                                    <div><strong>{{ entry.subject.code }}</strong></div>
+                                    <div class="small">{{ entry.subject.name }}</div>
+                                    <div class="small text-muted"><em>{{ entry.teacher.email.split('@')[0] }} in {{ entry.room.name }}</em></div>
+                                </td>
+                            {% elif not entry %}
+                                <td></td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
