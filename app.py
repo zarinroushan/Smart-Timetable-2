@@ -10,10 +10,17 @@ from openpyxl import Workbook
 import qrcode
 from flask_weasyprint import HTML, render_pdf
 
+
+import os
 # --- App Configuration ---
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'a-very-secret-key-that-you-should-change'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///college.db'
+# app.config['SECRET_KEY'] = 'a-very-secret-key-that-you-should-change'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///college.db'
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///local.db")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -397,16 +404,52 @@ def export_excel():
     return send_file(buf, as_attachment=True, download_name='attendance_report.xlsx')
 
 # --- CLI Command ---
+# @app.cli.command("init-db")
+# def init_db():
+#     db.create_all()
+#     if not User.query.filter_by(role='admin').first():
+#         hashed_password = generate_password_hash('adminpass', method='pbkdf2:sha256')
+#         db.session.add(User(email='admin@college.com', password=hashed_password, role='admin'))
+#         db.session.commit()
+#         print("Database initialized and admin user created.")
+#     else:
+#         print("Database already initialized.")
+# --- CLI Command ---
+# @app.cli.command("init-db")
+# def init_db():
+#     db.create_all()
+#     if not User.query.filter_by(role='admin').first():
+#         admin_email = 'admin@college.com'
+#         admin_password = 'adminpass'
+#         hashed_password = generate_password_hash(admin_password, method='pbkdf2:sha256')
+        
+#         db.session.add(User(email=admin_email, password=hashed_password, role='admin'))
+#         db.session.commit()
+        
+#         print("✅ Database initialized and admin user created.")
+#         print(f"👉 Admin Email: {admin_email}")
+#         print(f"👉 Admin Password: {admin_password}")
+#     else:
+#         print("⚠️ Database already initialized. Admin user already exists.")
+
 @app.cli.command("init-db")
 def init_db():
     db.create_all()
     if not User.query.filter_by(role='admin').first():
-        hashed_password = generate_password_hash('adminpass', method='pbkdf2:sha256')
-        db.session.add(User(email='admin@college.com', password=hashed_password, role='admin'))
+        admin_email = 'admin@college.com'
+        admin_password = 'adminpass'
+        hashed_password = generate_password_hash(admin_password, method='pbkdf2:sha256')
+        
+        db.session.add(User(email=admin_email, password=hashed_password, role='admin'))
         db.session.commit()
-        print("Database initialized and admin user created.")
+        
+        print("✅ Database initialized and admin user created.")
+        print(f"👉 Admin Email: {admin_email}")
+        print(f"👉 Admin Password: {admin_password}")
     else:
-        print("Database already initialized.")
+        print("⚠️ Database already initialized. Admin user already exists.")
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
