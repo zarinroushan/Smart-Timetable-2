@@ -6,3 +6,4 @@ qrcode[pil]
 itsdangerous
 openpyxl
 Flask-WeasyPrint
+gunicorn==21.2.0
